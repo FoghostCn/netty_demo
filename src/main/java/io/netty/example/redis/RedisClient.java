@@ -16,11 +16,7 @@
 package io.netty.example.redis;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -30,8 +26,7 @@ import io.netty.handler.codec.redis.RedisDecoder;
 import io.netty.handler.codec.redis.RedisEncoder;
 import io.netty.util.concurrent.GenericFutureListener;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 /**
  * Simple Redis client that demonstrates Redis commands against a Redis server.
@@ -64,14 +59,15 @@ public class RedisClient {
             // Read commands from the stdin.
             System.out.println("Enter Redis commands (quit to end)");
             ChannelFuture lastWriteFuture = null;
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            for (;;) {
-                final String input = in.readLine();
+//            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            Scanner sc = new Scanner(System.in);
+            while (sc.hasNext()) {
+                final String input = sc.nextLine();
                 final String line = input != null ? input.trim() : null;
-                if (line == null || "quit".equalsIgnoreCase(line)) { // EOF or "quit"
+                if ("quit".equalsIgnoreCase(line)) { // EOF or "quit"
                     ch.close().sync();
                     break;
-                } else if (line.isEmpty()) { // skip `enter` or `enter` with spaces.
+                } else if (line == null) { // skip `enter` or `enter` with spaces.
                     continue;
                 }
                 // Sends the received line to the server.

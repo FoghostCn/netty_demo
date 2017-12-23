@@ -1,3 +1,5 @@
+package netty;
+
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,8 +16,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @since 2017/10/23
  */
 //@Sharable
-public class HttpHelloWorldServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-  private static final byte[] CONTENT = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
+public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
   @Override
   public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -24,7 +25,6 @@ public class HttpHelloWorldServerHandler extends SimpleChannelInboundHandler<Ful
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-    ctx.fireChannelRead(request.retain());
     request.headers().forEach(System.out::println);
     System.out.println();
     System.out.println(request.content().toString(CharsetUtil.UTF_8));
@@ -32,7 +32,8 @@ public class HttpHelloWorldServerHandler extends SimpleChannelInboundHandler<Ful
       ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
     }
     boolean keepAlive = HttpUtil.isKeepAlive(request);
-    FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(CONTENT));
+    FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.copiedBuffer
+      ("Hello World!".getBytes()));
     response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
     response.headers().set(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
 

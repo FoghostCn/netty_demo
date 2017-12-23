@@ -1,3 +1,6 @@
+import io.netty.util.CharsetUtil;
+import netty.HttpClient;
+
 /**
  * @author Foghost
  * @since 2017/6/1
@@ -37,5 +40,15 @@ public class Main1 {
 //            .on(Socket.EVENT_DISCONNECT, System.out::println)
 //            .on(Socket.EVENT_CONNECT_ERROR, System.out::println);
 //        socket.connect();
+    HttpClient.get("http://www.baidu.com/xxx")
+      .whenComplete((response, throwable) -> {
+        if (null != throwable) {
+          throwable.printStackTrace();
+        }
+        response.headers().forEach(System.out::println);
+        System.out.println(response.content().toString(CharsetUtil.UTF_8));
+      }).thenAccept(fullHttpResponse -> {
+        System.out.println(1111111111);
+    });
   }
 }
