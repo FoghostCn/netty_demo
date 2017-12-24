@@ -6,20 +6,16 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpContentCompressor;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
+
+import java.net.InetSocketAddress;
 
 /**
  * @author Foghost
@@ -56,15 +52,17 @@ public final class HttpServer {
           @Override
           public void initChannel(SocketChannel ch) {
             ChannelPipeline p = ch.pipeline();
+            p.addLast(new HttpProxyHandler(new InetSocketAddress("https://www.baidu.com/", 443)));
+
 //              p.addFirst(sslContext.newHandler(ch.alloc()));
-            p.addLast(new HttpServerCodec());
-            p.addLast(new HttpContentCompressor());
-            p.addLast(new ChunkedWriteHandler());
-            p.addLast(new HttpObjectAggregator(65535));
-            p.addLast(new WebSocketServerCompressionHandler());
-            p.addLast(new IdleStateHandler(10, 0, 0));
-            p.addLast(new WebSocketServerProtocolHandler(WS_PATH, null, true));
-            p.addLast(new WebsocketHandler());
+//            p.addLast(new HttpServerCodec());
+//            p.addLast(new HttpContentCompressor());
+//            p.addLast(new ChunkedWriteHandler());
+//            p.addLast(new HttpObjectAggregator(65535));
+//            p.addLast(new WebSocketServerCompressionHandler());
+//            p.addLast(new IdleStateHandler(10, 0, 0));
+//            p.addLast(new WebSocketServerProtocolHandler(WS_PATH, null, true));
+//            p.addLast(new WebsocketHandler());
             p.addLast(new HttpServerHandler());
           }
         });

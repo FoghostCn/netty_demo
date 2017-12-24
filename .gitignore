@@ -3,3 +3,4 @@ out/
 build/
 META-INF
 .gradle
+node_modules

@@ -24,6 +24,7 @@ import io.netty.handler.codec.redis.RedisArrayAggregator;
 import io.netty.handler.codec.redis.RedisBulkStringAggregator;
 import io.netty.handler.codec.redis.RedisDecoder;
 import io.netty.handler.codec.redis.RedisEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.util.Scanner;
@@ -32,8 +33,8 @@ import java.util.Scanner;
  * Simple Redis client that demonstrates Redis commands against a Redis server.
  */
 public class RedisClient {
-    private static final String HOST = System.getProperty("host", "127.0.0.1");
-    private static final int PORT = Integer.parseInt(System.getProperty("port", "6379"));
+    private static final String HOST = System.getProperty("host", "10.14.6.16");
+    private static final int PORT = Integer.parseInt(System.getProperty("port", "8379"));
 
     public static void main(String[] args) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
@@ -49,6 +50,7 @@ public class RedisClient {
                      p.addLast(new RedisBulkStringAggregator());
                      p.addLast(new RedisArrayAggregator());
                      p.addLast(new RedisEncoder());
+                     p.addLast(new IdleStateHandler(0, 0, 10));
                      p.addLast(new RedisClientHandler());
                  }
              });

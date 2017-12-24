@@ -33,15 +33,19 @@ public class WebsocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    logger.info(ctx.channel().id() + " active...");
-    ctx.channel().closeFuture().addListener(future -> logger.info(ctx.channel().id() + "channel " +
-      "closed"));
+    ctx.channel().closeFuture().addListener(future -> logger.info(ctx.channel().id() + " channel closed"));
   }
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
     channels.add(ctx.channel());
-    channels.writeAndFlush(new TextWebSocketFrame("hahahahah"));
+    channels.writeAndFlush(new TextWebSocketFrame("hahahahah")).addListener(future -> {
+      if (future.isSuccess() && logger.isInfoEnabled()) {
+        logger.info("all room write success");
+      } else if(!future.isSuccess()){
+        future.cause().printStackTrace();
+      }
+    });
     logger.info(msg.text());
     QueryStringDecoder queryStringDecoder = ctx.channel().attr(key).get();
     logger.info(queryStringDecoder.toString());
